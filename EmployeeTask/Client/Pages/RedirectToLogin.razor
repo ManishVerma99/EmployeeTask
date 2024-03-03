@@ -1,0 +1,19 @@
+﻿@inject NavigationManager Navigation
+@inject AuthenticationStateProvider authenticationStateProvider
+
+@code {
+    protected async override void OnInitialized()
+    {
+        var authState = await authenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        if (user?.Identity?.IsAuthenticated ?? false)
+        {
+            
+        }
+        else
+        {
+            string returnUri = Navigation.Uri;
+            Navigation.NavigateTo($"login?returnUrl={returnUri}");
+        }
+    }
+}

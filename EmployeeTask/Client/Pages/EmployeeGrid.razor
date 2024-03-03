@@ -1,0 +1,56 @@
+﻿@page "/EmployeeGrid"
+@layout MainLayout
+@inherits EmployeeGridBase
+@attribute [Authorize(Roles = "Admin")]
+<div class="container">
+    @foreach (var message in messageList)
+    {
+        <h4>@message</h4>
+    }
+    <MudTextField Placeholder="@placeholder" @bind-Value="text" Label="Message" />
+    <MudButton OnClick="()=>SendMessage(text)" Variant="Variant.Filled" Color="Color.Primary">Send</MudButton>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <MudText Class="h5 m-0">Employee Details</MudText>
+        <MudButton OnClick="()=>OpenEditEmployeeDialog(new RegisterModel())" Variant="Variant.Filled" Color="Color.Primary">Add Employee</MudButton>
+    </div>
+    <MudTable Class="mt-2" Elevation="25" ServerData="@(new Func<TableState, Task<TableData<RegisterModel>>>(GetEmployees))" @ref="table" Hover="true">
+        <HeaderContent>
+            <MudTh><MudTableSortLabel T="RegisterModel">User Name</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel T="RegisterModel">First Name</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel T="RegisterModel">Last Name</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel T="RegisterModel">Email</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel T="RegisterModel"></MudTableSortLabel></MudTh>
+        </HeaderContent>
+        <RowTemplate Context="rowContext">
+            <MudTd DataLabel="User Name">
+                <MudHighlighter Text="@rowContext.Username" />
+            </MudTd>
+            <MudTd DataLabel="First Name">
+                <MudHighlighter Text="@rowContext.FirstName" />
+            </MudTd>
+            <MudTd DataLabel="Last Name">
+                <MudHighlighter Text="@rowContext.LastName" />
+            </MudTd>
+            <MudTd DataLabel="Email">
+                <MudHighlighter Text="@rowContext.Email" />
+            </MudTd>
+            <MudTd DataLabel="Actions" Style="text-align:right">
+                <MudIconButton Class="p-2 me-1 edit-btn" @onclick="@(()=>OpenEditEmployeeDialog(rowContext))" Icon="@Icons.Material.Filled.Edit"></MudIconButton>
+                <MudIconButton Class="p-2 delete-btn" @onclick="@(()=>DeleteEmployee(rowContext.Id))" Icon="@Icons.Material.Filled.Delete"></MudIconButton>
+                <MudMenu Class="ms-2" Label="Actions" Variant="Variant.Filled" DisableElevation="true" EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="MudBlazor.Color.Secondary">
+                    <MudMenuItem @onclick="@(()=>OpenTaskDialog(rowContext.Id))">Add Task</MudMenuItem>
+                    <MudMenuItem @onclick="@(()=>NavigatToTaskGrid(rowContext.Id))">View All Tasks</MudMenuItem>
+                </MudMenu>
+            </MudTd>
+        </RowTemplate>
+        <FooterContent>
+        </FooterContent>
+    </MudTable>
+</div>
+<script>
+    window.addEventListener("online", () => {
+        debugger
+        console.log("connected");
+        DotNet.invokeMethodAsync("EmployeeTask.Client", "HandleOnlineEvent");
+    });
+</script>

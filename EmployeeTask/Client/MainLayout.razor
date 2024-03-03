@@ -1,0 +1,52 @@
+﻿@using Microsoft.AspNetCore.Http
+@using Microsoft.AspNetCore.Http.Connections
+@inherits LayoutComponentBase
+@inject ITaskAuthenticationStateProvider _taskAuthenticationStateProvider;
+@inject AuthenticationStateProvider _authenticationStateProvider;
+@inject NavigationManager _navigationManager;
+@inject ILocalStorageService _localStorage;
+<MudThemeProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+<main>
+    <AuthorizeView>
+        <Authorized>
+            <div class="log-header d-flex align-items-center justify-content-between">
+                <h3 class="m-0">@(context.User.IsInRole("Admin") ? "Admin Dashboard" : "Employee Dashboad")</h3>
+                <MudButton Variant="Variant.Filled" Color="Color.Dark" OnClick="OnLogout">Logout</MudButton>
+            </div>
+        </Authorized>
+    </AuthorizeView>
+    <CascadingValue Value="HubConnection">
+        @if (RenderBody)
+        {
+            @Body
+        }
+    </CascadingValue>
+</main>
+@code {
+    [Inject] IJSRuntime JsRuntime { get; set; }
+    public HubConnection HubConnection { get; set; }
+    public bool RenderBody { get; set; }
+    private async Task OnLogout()
+    {
+        await _taskAuthenticationStateProvider.MarkUserAsLoggedOut();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var user = await _authenticationStateProvider.GetAuthenticationStateAsync();
+        var expirationClaim = user.User?.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Expiration)?.Value!;
+        HubConnection = new HubConnectionBuilder().WithUrl(_navigationManager.ToAbsoluteUri("/signalRHub"), options =>
+          {
+              options.AccessTokenProvider = async () =>
+             {
+                 return await _localStorage.GetItemAsync<string>("token");
+             };
+              options.Transports = HttpTransportType.LongPolling;
+          }).Build();
+        await HubConnection.StartAsync();
+        RenderBody = true;
+        //StateHasChanged();
+    }
+}

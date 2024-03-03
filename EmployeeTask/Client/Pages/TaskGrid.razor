@@ -1,0 +1,31 @@
+﻿@page "/taskgrid/{Id}"
+@inject IDialogService _dialogService;
+@inject HttpClient _httpClient;
+@layout MainLayout
+@attribute [Authorize(Roles = "Admin,User")]
+<div class="container">
+    <div class="d-flex align-items-center mb-3">
+        <MudText Class="h5 m-0">Task Details</MudText>
+    </div>
+    <MudTable Class="mt-2" Elevation="25" ServerData="@(new Func<TableState, Task<TableData<AssignedTaskModel>>>(GetTasks))" @ref="table" Hover="true">
+        <HeaderContent>
+            <MudTh><MudTableSortLabel T="AssignedTaskModel">Task Name</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel T="AssignedTaskModel">Task Status</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel T="AssignedTaskModel"></MudTableSortLabel></MudTh>
+        </HeaderContent>
+        <RowTemplate Context="rowContext">
+            <MudTd DataLabel="Task Name">
+                <MudHighlighter Text="@rowContext.TaskName" />
+            </MudTd>
+            <MudTd DataLabel="Task Status">
+                <MudHighlighter Text="@(rowContext.TaskStatus ? "Completed" :"Pending")" />
+            </MudTd>
+            <MudTd DataLabel="Actions" Style="text-align:right">
+                <MudIconButton Class="p-2 me-1 edit-btn" @onclick="@(()=>OpenEditTaskDialog(rowContext))" Icon="@Icons.Material.Filled.Edit"></MudIconButton>
+                <MudIconButton Class="p-2 me-1 delete-btn" @onclick="@(()=>DeleteTask(rowContext.Id))" Icon="@Icons.Material.Filled.Delete"></MudIconButton>
+            </MudTd>
+        </RowTemplate>
+        <FooterContent>
+        </FooterContent>
+    </MudTable>
+</div>

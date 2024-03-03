@@ -1,0 +1,29 @@
+﻿@inject HttpClient _httpClient;
+
+<EditForm Model="@AssignedTask" OnValidSubmit="CreateOrUpdateTask">
+    <DataAnnotationsValidator />
+    <MudDialog>
+        <TitleContent>
+            @{
+                <MudText Typo="Typo.h6">@(AssignedTask.Id==0 ? "Create" : "Update") Task</MudText>
+            }
+        </TitleContent>
+        <DialogContent>
+            <MudGrid>
+                <MudItem md="6">
+                    <MudTextField Disabled="@(IsAdmin ? false:true)" For="@(() => AssignedTask.TaskName)" @bind-Value="AssignedTask.TaskName" Label="Task Name" />
+                </MudItem>
+                <MudItem md="6">
+                    <MudSelect T="bool" @bind-Value="AssignedTask.TaskStatus" Label="Task Status">
+                        <MudSelectItem Value="false">Pending</MudSelectItem>
+                        <MudSelectItem Value="true">Completed</MudSelectItem>
+                    </MudSelect>
+                </MudItem>
+            </MudGrid>
+        </DialogContent>
+        <DialogActions>
+            <MudButton Class="my-2" Variant="Variant.Filled">Cancel</MudButton>
+            <MudButton Class="my-2 me-2" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Color="MudBlazor.Color.Success">@(AssignedTask.Id == 0 ? "Create" : "Update")</MudButton>
+        </DialogActions>
+    </MudDialog>
+</EditForm>

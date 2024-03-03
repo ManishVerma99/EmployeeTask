@@ -1,0 +1,6 @@
+﻿@page "/"
+@inject NavigationManager Navigation;
+@inject AuthenticationStateProvider _authProvider;
+@layout MainLayout
+@attribute [Authorize(Roles = "Admin,User")]
+<h3>Index</h3>

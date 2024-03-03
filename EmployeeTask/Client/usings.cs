@@ -1,0 +1,16 @@
+﻿global using System.Security.Claims;
+global using EmployeeTask.Shared.Constants;
+global using EmployeeTask.Shared.ViewModels;
+global using Microsoft.AspNetCore.Components;
+global using Microsoft.AspNetCore.Components.Authorization;
+global using MudBlazor;
+global using System.Net.Http.Json;
+global using EmployeeTask.Core.Models;
+global using Blazored.LocalStorage;
+global using EmployeeTask.Client.Components;
+global using System.Text.Json;
+global using EmployeeTask.Client;
+global using EmployeeTask.Client.Services;
+global using Microsoft.AspNetCore.Components.Web;
+global using MudBlazor.Services;
+global using Microsoft.AspNetCore.SignalR.Client;
