@@ -26,7 +26,7 @@
                     var user = await _authProvider.GetAuthenticationStateAsync();
                     var createdBy = user.User.FindFirst(ClaimTypes.Name).Value;
                     await LocalStorage.SetItemAsync("CreatedBy", createdBy);
-                    NavigationManager.NavigateTo("/EmployeeGrid");
+                    NavigationManager.NavigateTo("/chat");
                 }
                 else
                 {

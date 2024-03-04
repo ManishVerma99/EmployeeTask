@@ -7,5 +7,6 @@
         Task<Response> UpdateEmployee(UpdateEmployee model);
         Task<Response> DeleteEmployee(string id);
         Task<Employee> GetEmployee(string id);
+        Task<List<ApplicationUser>> GetUsers();
     }
 }

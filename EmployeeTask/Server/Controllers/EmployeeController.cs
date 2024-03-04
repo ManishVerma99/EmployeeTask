@@ -19,7 +19,11 @@ namespace EmployeeTask.Server.Controllers
         public async Task<IActionResult> GetEmployees()
         {
             var result = await _employeeService.GetEmployees();
-            return Ok(result);
+            if (result != null)
+            {
+                return Ok(result);
+            }
+            return StatusCode(StatusCodes.Status204NoContent, result);
         }
 
         [HttpPost]
@@ -55,8 +59,19 @@ namespace EmployeeTask.Server.Controllers
             {
                 return Ok(result);
             }
-            return StatusCode(StatusCodes.Status404NotFound, result);
+            return StatusCode(StatusCodes.Status204NoContent, result);
         }
 
+        [HttpGet]
+        [Route("GetUsers")]
+        public async Task<IActionResult> GetAllUsers()
+        {
+            var result = await _employeeService.GetUsers();
+            if (result != null)
+            {
+                return Ok(result);
+            }
+            return StatusCode(StatusCodes.Status204NoContent, result);
+        }
     }
 }

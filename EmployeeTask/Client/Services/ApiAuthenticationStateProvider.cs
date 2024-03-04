@@ -134,7 +134,9 @@ namespace EmployeeTask.Client.Services
             foreach (var role in currentRoles)
             {
                 claimsIdentity.AddClaim(new Claim(ClaimTypes.Role, role));
+                
             }
+            claimsIdentity.AddClaim(new Claim(ClaimTypes.Email, savedToken.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email).Value));
             //create claimsPrincipal
             var authenticatedUser = new ClaimsPrincipal(claimsIdentity);
             return authenticatedUser;

@@ -34,5 +34,10 @@
         {
             return await _employeeRepository.GetEmployee(id);
         }
+
+        public async Task<List<ApplicationUser>> GetUsers()
+        {
+            return await _employeeRepository.GetUsers();
+        }
     }
 }

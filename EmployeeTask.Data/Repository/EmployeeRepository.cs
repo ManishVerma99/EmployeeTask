@@ -96,6 +96,10 @@
             }
             return result;
         }
-        
+
+        public async Task<List<ApplicationUser>> GetUsers()
+        {
+            return await _applicationContext.Users.ToListAsync();
+        }
     }
 }

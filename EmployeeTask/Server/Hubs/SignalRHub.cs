@@ -12,15 +12,15 @@ namespace EmployeeTask.Server.Hubs
     [Authorize]
     public class SignalRHub : Hub
     {
-        public class usermessage
+        public class StoreUserMessage
         {
-            public string username { get; set; }
-            public List<string> message { get; set; } = new List<string>();
+            public string Username { get; set; }
+            public List<string> Messages { get; set; } = new List<string>();
         }
 
         private static List<ConnectedUser> connectedUsers = new List<ConnectedUser>();
         private static List<string> lists = new List<string>();
-        private static List<usermessage> Messages = new List<usermessage>();
+        private static List<StoreUserMessage> UserMessages = new List<StoreUserMessage>();
         public override async Task OnDisconnectedAsync(Exception exception)
         {
 
@@ -37,6 +37,33 @@ namespace EmployeeTask.Server.Hubs
             if (count > 1) // Multiple connection: Remove current connection
             {
                 user.Connections.Remove(connection);
+            }
+        }
+
+        public async Task SendMessage(string message, string user)
+        {
+            var userIdentifier = (from _connectedUser in connectedUsers
+                                  where _connectedUser.UserIdentifier == user
+                                  select _connectedUser.UserIdentifier).FirstOrDefault();
+            if (userIdentifier != null)
+            {
+                await Clients.User(userIdentifier).SendAsync("RecieveMessage", new List<string> { message }, userIdentifier);
+            }
+            else
+            {
+                StoreUserMessage storeUserMessage = new StoreUserMessage();
+                storeUserMessage.Messages.Add(message);
+                storeUserMessage.Username = user;
+
+                if (UserMessages.Any(x => x.Username == storeUserMessage.Username))
+                {
+                    int index = UserMessages.FindIndex(u => u.Username == storeUserMessage.Username);
+                    UserMessages[index].Messages.Add(message);
+                }
+                else
+                {
+                    UserMessages.Add(storeUserMessage);
+                }
             }
         }
 
@@ -95,9 +122,9 @@ namespace EmployeeTask.Server.Hubs
             {
                 await Clients.User(lists.FirstOrDefault()!).SendAsync("UserConnectedd", lists.FirstOrDefault()!);
             }
-            if(Messages != null && Messages.Any(x=>x.username == userI2D))
+            if(UserMessages != null && UserMessages.Any(x=>x.Username == userI2D))
             {
-                await Clients.User(userI2D).SendAsync("RefreshMessagess",Messages.FirstOrDefault(x=>x.username.Equals(userI2D))?.message);
+                await Clients.User(userI2D).SendAsync("RefreshMessagess", UserMessages.FirstOrDefault(x=>x.Username.Equals(userI2D))?.Messages);
             }
         }
         public async Task UserDisConnected()
@@ -137,18 +164,18 @@ namespace EmployeeTask.Server.Hubs
             }
             else
             {
-                usermessage usermessage = new usermessage();
-                usermessage.message.Add(message);
-                usermessage.username = "manish@gmail.com";
+                StoreUserMessage storeUserMessage = new StoreUserMessage();
+                storeUserMessage.Messages.Add(message);
+                storeUserMessage.Username = "manish@gmail.com";
                 
-                if (Messages.Any(x=>x.username == usermessage.username))
+                if (UserMessages.Any(x=>x.Username == storeUserMessage.Username))
                 {
-                    int index = Messages.FindIndex(u => u.username == usermessage.username);
-                    Messages[index].message.Add(message);
+                    int index = UserMessages.FindIndex(u => u.Username == storeUserMessage.Username);
+                    UserMessages[index].Messages.Add(message);
                 }
                 else
                 {
-                    Messages.Add(usermessage);
+                    UserMessages.Add(storeUserMessage);
                 }
             }
 
