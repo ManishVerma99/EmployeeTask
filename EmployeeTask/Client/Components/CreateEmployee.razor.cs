@@ -1,7 +1,4 @@
-﻿using Microsoft.AspNetCore.SignalR.Client;
-using System.Net.Http.Headers;
-
-namespace EmployeeTask.Client.Components
+﻿namespace EmployeeTask.Client.Components
 {
     public partial class CreateEmployee : IDisposable
     {
@@ -51,7 +48,6 @@ namespace EmployeeTask.Client.Components
             if (httpResponseMessage != null && response.Status == "Success")
             {
                 MudDialog.Close(DialogResult.Ok(true));
-                HubConnection?.InvokeAsync("RefreshEmployees", "Hello");
             }
         }
 

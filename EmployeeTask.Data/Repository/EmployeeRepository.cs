@@ -1,11 +1,17 @@
-﻿namespace EmployeeTask.Data.Repository
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
+
+namespace EmployeeTask.Data.Repository
 {
     public class EmployeeRepository : IEmployeeRepository
     {
         private readonly ApplicationContext _applicationContext;
-        public EmployeeRepository(ApplicationContext applicationContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        public EmployeeRepository(IHttpContextAccessor httpContextAccessor,ApplicationContext applicationContext)
         {
             _applicationContext = applicationContext;
+            _httpContextAccessor = httpContextAccessor;
         }
         public async Task<Response> CreateEmployee(RegisterModel model)
         {
@@ -99,7 +105,8 @@
 
         public async Task<List<ApplicationUser>> GetUsers()
         {
-            return await _applicationContext.Users.ToListAsync();
+            var userId = _httpContextAccessor.HttpContext.User.FindFirst("UserId")?.Value;
+            return await _applicationContext.Users.Where(x=>x.Id != userId).ToListAsync();
         }
     }
 }

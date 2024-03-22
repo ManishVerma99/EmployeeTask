@@ -35,18 +35,14 @@
 
     protected override async Task OnInitializedAsync()
     {
+
         var user = await _authenticationStateProvider.GetAuthenticationStateAsync();
         var expirationClaim = user.User?.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Expiration)?.Value!;
-        HubConnection = new HubConnectionBuilder().WithUrl(_navigationManager.ToAbsoluteUri("/signalRHub"), options =>
-          {
-              options.AccessTokenProvider = async () =>
-             {
-                 return await _localStorage.GetItemAsync<string>("token");
-             };
-              options.Transports = HttpTransportType.LongPolling;
-          }).Build();
+        HubConnection = new HubConnectionBuilder().WithUrl(_navigationManager.ToAbsoluteUri("/signalRHub"), options => {
+              options.AccessTokenProvider = async () => await _localStorage.GetItemAsync<string>("token");
+          }).WithAutomaticReconnect().WithStatefulReconnect().Build();
         await HubConnection.StartAsync();
         RenderBody = true;
-        //StateHasChanged();
+        StateHasChanged();
     }
 }

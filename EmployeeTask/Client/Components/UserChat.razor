@@ -1,0 +1,60 @@
+﻿@inherits UserChatBase
+@implements IAsyncDisposable
+<div class="container">
+    <h2>Messages</h2>
+    <div class="row user-chat-main">
+        <!-- Sidebar -->
+        <div class="col-md-4 chat-right-side">
+            <div class="mb-3">
+                <MudTextField Class="form-control" @bind-Value="CurrentMessage" InputType="InputType.Text" Placeholder="Search..."></MudTextField>
+            </div>
+            <!-- User List -->
+            @foreach (var x in applicationUsers)
+            {
+                <div class="mb-3">
+                    <div class="user-name @(ConnectedUsers.Any(y => y.UserIdentifier == x.Email) ? "green" : "red")" @onclick="()=>OnUserClick(x)">
+                        <MudText Class="user-name-text">@x.UserName</MudText>
+                            <MudText Class="user-status">@(ConnectedUsers.Any(y => y.UserIdentifier == x.Email) ? "Online" : "Offline")</MudText>
+                        </div>
+                    </div>
+            }
+        </div>
+        <!-- Main Content -->
+        <div class="col-md-8 chat-left-side">
+            @if (SelectedUser != null && !string.IsNullOrEmpty(SelectedUser.UserName))
+            {
+                <div class="user-detail-section">
+                    <div class="d-flex align-items-center">
+                        <div class="mr-3">
+                            <MudImage Src="https://bootdey.com/img/Content/avatar/avatar3.png" Class="rounded-circle" Alt="Sharon Lessman" Width="40" Height="40" />
+                        </div>
+                        <div class="user-typing">
+                            <MudText Class="">@SelectedUser.UserName</MudText>
+                                <MudText Class="">@(ShowTypingIndicatorToUserId == CurrentUserEmail && showTypingIndicator ? "Typing..." : "")</MudText>
+                            </div>
+                        </div>
+                    </div>
+                <!-- Chat Messages -->
+                <div class="chat-section">
+                    <div class="chat-messages">
+                        @if (ChatList != null && ChatList.Any())
+                        {
+                            foreach (var x in ChatList)
+                            {
+                                <div class="d-flex @(x.FromUserId == CurrentUserId ? "justify-content-end":"")">
+                                    <div class="message-section mb-2">
+                                        <MudText Class="message">@x.Message</MudText>
+                                        <MudText Class="message-date text-end">@x.CreatedDate.ToString("HH:mm")</MudText>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                    <div class="">
+                        <MudTextField Class="" OnKeyUp="OnMessageInput" @bind-Value="CurrentMessage" InputType="InputType.Text" Placeholder="Type your message"></MudTextField>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

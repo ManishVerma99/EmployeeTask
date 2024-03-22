@@ -7,7 +7,7 @@
             var authenticationState = await _authProvider.GetAuthenticationStateAsync();
             var role = authenticationState.User.FindFirst(ClaimTypes.Role).Value;
             var id = authenticationState.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            var route = role == "Admin" ? "/EmployeeGrid" : $"/TaskGrid/{id}";
+            var route = role == "Admin" ? "/chat" : $"/TaskGrid/{id}";
             Navigation.NavigateTo(route);
         }
     }

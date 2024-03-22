@@ -1,0 +1,14 @@
+﻿@page "/chat"
+@layout MainLayout
+@* @implements IAsyncDisposable
+ *@
+ <UserChat HubConnection="HubConnection"></UserChat>
+@code {
+    [CascadingParameter] public HubConnection HubConnection { get; set; }
+
+    // public ValueTask DisposeAsync()
+    // {
+    //     //throw new NotImplementedException();
+    // }
+
+}

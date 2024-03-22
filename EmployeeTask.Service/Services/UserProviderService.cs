@@ -7,7 +7,7 @@ namespace EmployeeTask.Client.Services
     {
         public string GetUserId(HubConnectionContext connection)
         {
-            var test =  connection.User?.FindFirst(ClaimTypes.Email)?.Value!;
+            var test = connection.User?.FindFirst(ClaimTypes.Email)?.Value!;
             return test;
         }
     }

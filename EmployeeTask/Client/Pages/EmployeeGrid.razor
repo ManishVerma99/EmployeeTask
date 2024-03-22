@@ -3,12 +3,6 @@
 @inherits EmployeeGridBase
 @attribute [Authorize(Roles = "Admin")]
 <div class="container">
-    @foreach (var message in messageList)
-    {
-        <h4>@message</h4>
-    }
-    <MudTextField Placeholder="@placeholder" @bind-Value="text" Label="Message" />
-    <MudButton OnClick="()=>SendMessage(text)" Variant="Variant.Filled" Color="Color.Primary">Send</MudButton>
     <div class="d-flex justify-content-between align-items-center mb-3">
         <MudText Class="h5 m-0">Employee Details</MudText>
         <MudButton OnClick="()=>OpenEditEmployeeDialog(new RegisterModel())" Variant="Variant.Filled" Color="Color.Primary">Add Employee</MudButton>

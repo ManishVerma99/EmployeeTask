@@ -1,9 +1,12 @@
+using System.Net;
 using Blazored.LocalStorage;
 using EmployeeTask.Client.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,23 +38,23 @@ builder.Services.AddAuthentication(options =>
                     ValidIssuer = builder.Configuration["JWT:ValidIssuer"],
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"]))
                 };
-                //options.Events = new JwtBearerEvents
-                //{
-                //    OnMessageReceived = context =>
-                //    {
-                //        var accessToken = context.Request.Query["access_token"];
+            options.Events = new JwtBearerEvents
+            {
+                OnMessageReceived = context =>
+                {
+                    var accessToken = context.Request.Query["access_token"];
 
-                //        // If the request is for our hub...
-                //        var path = context.HttpContext.Request.Path;
-                //        if (!string.IsNullOrEmpty(accessToken) &&
-                //            (path.StartsWithSegments("/hubs/chat")))
-                //        {
-                //            // Read the token out of the query string
-                //            context.Token = accessToken;
-                //        }
-                //        return Task.CompletedTask;
-                //    }
-                //};
+                    // If the request is for our hub...
+                    var path = context.HttpContext.Request.Path;
+                    if (!string.IsNullOrEmpty(accessToken) &&
+                        (path.StartsWithSegments("/signalRHub")))
+                    {
+                        // Read the token out of the query string
+                        context.Token = accessToken;
+                    }
+                    return Task.CompletedTask;
+                }
+                };
             });
 
 builder.Services.AddCors(options =>
@@ -73,7 +76,13 @@ builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<ITaskService, TaskService>();
 builder.Services.AddScoped<ITaskRepository, TaskRespository>();
+builder.Services.AddScoped<IChatRepository, ChatRepository>();
+builder.Services.AddScoped<IChatService, ChatService>();
 builder.Services.AddSingleton<IUserIdProvider, UserProviderService>();
+//builder.Services.TryAddEnumerable(
+//    descriptor: ServiceDescriptor.Singleton<
+//        IPostConfigureOptions<JwtBearerOptions>,
+//        ConfigureJwtBearerOptions>());
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -100,3 +109,4 @@ app.UseAuthorization();
 app.MapHub<SignalRHub>("/signalRHub");
 app.MapFallbackToFile("index.html");
 app.Run();
+

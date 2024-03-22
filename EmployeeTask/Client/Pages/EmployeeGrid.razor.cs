@@ -5,43 +5,6 @@ namespace EmployeeTask.Client.Pages
 {
     public class EmployeeGridBase: ComponentBase
     {
-        public static EmployeeGridBase Instance { get; private set; }
-        public EmployeeGridBase()
-        {
-            Instance = this;
-        }
-        public string placeholder = "Users disconnected";
-        public string text = "";
-        public List<string> messageList = new List<string>();
-
-        [JSInvokable("HandleOnlineEvent")]
-        public static async Task HandleOnlineEvent()
-        {
-            await Instance.Hello();
-        }
-
-        public async Task Hello()
-        {
-            await HubConnection.SendAsync("UserConnected");
-        }
-        public async Task SendMessage(string message)
-        {
-            text = string.Empty;
-            messageList.Add(message);
-            await HubConnection.SendAsync("RefreshMessages", message);
-        }
-        public void RefreshMessages(List<string> message)
-        {
-            messageList.AddRange(message);
-        }
-        public void OnDisConnected()
-        {
-            placeholder = "User disconnected";
-        }
-        public void OnConnected()
-        {
-            placeholder = "";
-        }
         #region Services
         [Inject] public NavigationManager NavigationManager { get; set; }
         [Inject] public HttpClient _httpClient { get; set; }
@@ -59,34 +22,6 @@ namespace EmployeeTask.Client.Pages
 
         protected override async Task OnInitializedAsync()
         {
-            if (HubConnection != null && HubConnection.State == HubConnectionState.Connected)
-            {
-               
-                HubConnection.On("RefreshEmployees", () =>
-                {
-                    table.ReloadServerData();
-                });
-                HubConnection.On<List<string>>("RefreshMessagess", (message) =>
-                {
-                     RefreshMessages(message);
-                    StateHasChanged();
-                });
-                HubConnection.Closed += async (s) =>
-                {
-                    OnDisConnected();
-                };
-                HubConnection.On("UserDisConnectedd", () =>
-                {
-                    OnDisConnected();
-                    StateHasChanged();
-                });
-                HubConnection.On<string>("UserConnectedd", (user) =>
-                {
-                    OnConnected();
-                    StateHasChanged();
-                });
-               // await HubConnection.SendAsync("UserConnected");
-            }
         }
 
         public async Task<TableData<RegisterModel>> GetEmployees(TableState tableState)
@@ -116,7 +51,6 @@ namespace EmployeeTask.Client.Pages
             if (response != null && response.Status == "Success")
             {
                 await table.ReloadServerData();
-                HubConnection?.InvokeAsync("RefreshEmployees","Hello");
             }
         }
 
