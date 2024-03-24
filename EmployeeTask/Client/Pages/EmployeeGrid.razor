@@ -41,10 +41,3 @@
         </FooterContent>
     </MudTable>
 </div>
-<script>
-    window.addEventListener("online", () => {
-        debugger
-        console.log("connected");
-        DotNet.invokeMethodAsync("EmployeeTask.Client", "HandleOnlineEvent");
-    });
-</script>

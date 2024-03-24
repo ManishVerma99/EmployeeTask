@@ -31,6 +31,7 @@
     private async Task OnLogout()
     {
         await _taskAuthenticationStateProvider.MarkUserAsLoggedOut();
+        await HubConnection.DisposeAsync();
     }
 
     protected override async Task OnInitializedAsync()

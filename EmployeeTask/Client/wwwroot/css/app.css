@@ -90,7 +90,7 @@ body .mud-button {
 
 body {
     background: #f0f5fd;
-    overflow: hidden;
+    overflow: auto;
 }
 .delete-btn {
     color: red;

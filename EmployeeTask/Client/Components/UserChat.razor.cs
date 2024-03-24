@@ -57,6 +57,7 @@ namespace EmployeeTask.Client.Components
                     {
                         ChatList.Add(new ChatModel { Message = message.Message, CreatedDate = message.CreatedDate, FromUserId = SelectedUser.Id });
                     }
+                    ShouldScroll = true;
                     StateHasChanged();
                 }
             });
@@ -72,17 +73,25 @@ namespace EmployeeTask.Client.Components
                 ResetTypingTimer();
             });
 
-            HubConnection.On<string>("NotifyUser",  (eh) =>
+            HubConnection.On("NotifyUser",  async () =>
             {
+                ConnectedUsers = await HubConnection.InvokeAsync<List<ConnectedUser>>("GetConnectedUsers");
                 StateHasChanged();
             });
 
+        }
+
+        public async void ScrollToBottom()
+        {
+            await _JsRuntime.InvokeVoidAsync("scrollToBottom");
+            ShouldScroll = false;
         }
 
         public async Task LoadUserChat()
         {
             var result = await _httpClient.GetFromJsonAsync<List<ChatModel>>($"{ApplicationRoutes.Url}Chat/GetConversationAsync/{SelectedUser.Id}");
             ChatList = result;
+            ShouldScroll = true;
         }
 
         public async Task OnUserClick(ApplicationUser user)
@@ -100,13 +109,6 @@ namespace EmployeeTask.Client.Components
             else
             {
                 await HubConnection.SendAsync("MessageInput", SelectedUser.Email);
-                if (!showTypingIndicator)
-                {
-                    showTypingIndicator = true;
-                    StateHasChanged();
-                }
-
-                ResetTypingTimer();
             }
         }
 
@@ -141,8 +143,7 @@ namespace EmployeeTask.Client.Components
         {
             if (ShouldScroll)
             {
-                await _JsRuntime.InvokeVoidAsync("scrollToBottom");
-                ShouldScroll= false;
+               ScrollToBottom();
             }
         }
 

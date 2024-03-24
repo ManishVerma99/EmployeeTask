@@ -14,9 +14,9 @@
                 <div class="mb-3">
                     <div class="user-name @(ConnectedUsers.Any(y => y.UserIdentifier == x.Email) ? "green" : "red")" @onclick="()=>OnUserClick(x)">
                         <MudText Class="user-name-text">@x.UserName</MudText>
-                            <MudText Class="user-status">@(ConnectedUsers.Any(y => y.UserIdentifier == x.Email) ? "Online" : "Offline")</MudText>
-                        </div>
+                        <MudText Class="user-status">@(ConnectedUsers.Any(y => y.UserIdentifier == x.Email) ? "Online" : "Offline")</MudText>
                     </div>
+                </div>
             }
         </div>
         <!-- Main Content -->
@@ -30,10 +30,10 @@
                         </div>
                         <div class="user-typing">
                             <MudText Class="">@SelectedUser.UserName</MudText>
-                                <MudText Class="">@(ShowTypingIndicatorToUserId == CurrentUserEmail && showTypingIndicator ? "Typing..." : "")</MudText>
-                            </div>
+                            <MudText Class="">@(ShowTypingIndicatorToUserId == CurrentUserEmail && showTypingIndicator ? "Typing..." : "")</MudText>
                         </div>
                     </div>
+                </div>
                 <!-- Chat Messages -->
                 <div class="chat-section">
                     <div class="chat-messages">
@@ -58,3 +58,9 @@
         </div>
     </div>
 </div>
+<script>
+    window.addEventListener("online", () => {
+        console.log("connected");
+        DotNet.invokeMethodAsync("EmployeeTask.Client", "HandleOnlineEvent");
+    });
+</script>

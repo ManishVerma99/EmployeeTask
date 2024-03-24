@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using EmployeeTask.Core.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.SignalR;
 
 namespace EmployeeTask.Server.Hubs
 {
@@ -10,19 +12,20 @@ namespace EmployeeTask.Server.Hubs
         {
 
             var user = connectedUsers.Where(cu => cu.UserIdentifier == Context.UserIdentifier).FirstOrDefault();
+            connectedUsers.Remove(user);
+            await Clients.Users(connectedUsers.Select(x=>x.UserIdentifier).ToList()).SendAsync("NotifyUser");
+            //var connection = user.Connections.Where(c => c.ConnectionID == Context.ConnectionId).FirstOrDefault();
+            //var count = user.Connections.Count;
 
-            var connection = user.Connections.Where(c => c.ConnectionID == Context.ConnectionId).FirstOrDefault();
-            var count = user.Connections.Count;
+            //if (count == 1)
+            //{
+            //    connectedUsers.Remove(user);
 
-            if (count == 1)
-            {
-                connectedUsers.Remove(user);
-
-            }
-            if (count > 1)
-            {
-                user.Connections.Remove(connection);
-            }
+            //}
+            //if (count > 1)
+            //{
+            //    user.Connections.Remove(connection);
+            //}
         }
 
         public List<ConnectedUser> GetConnectedUsers()
@@ -74,7 +77,7 @@ namespace EmployeeTask.Server.Hubs
             var list = connectedUsers.Where(x=>x.UserIdentifier!=Context.UserIdentifier).Select(x => x.UserIdentifier).ToList();
             if (list != null && list.Count > 0)
             {
-                await Clients.Users(list).SendAsync("NotifyUser", "Hello");
+                await Clients.Users(list).SendAsync("NotifyUser");
 
             }
         }
