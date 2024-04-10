@@ -30,6 +30,7 @@ namespace EmployeeTask.Data.Repository
                     (x.FromUserId == id && x.ToUserId == userId) || (x.FromUserId == userId && x.ToUserId == id)).OrderBy(x=>x.CreatedDate)
                 .ToListAsync();
             return result ?? new List<Chat>();
+
         }
     }
 }
