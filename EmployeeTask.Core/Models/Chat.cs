@@ -12,5 +12,6 @@
         public virtual ApplicationUser FromUser { get; set; }
         [ForeignKey(nameof(ToUserId))]
         public virtual ApplicationUser ToUser { get; set; }
+
     }
 }
